@@ -1,0 +1,42 @@
+---
+# tasks file for el-datadisk
+- name: configure | create partion on device {{ device }}
+  community.general.parted:
+   device: "{{ device }}"
+   number: 1
+   flags: [ lvm ]
+   state: present
+
+- name: configure | create volume group vg.{{ storagename }}
+  lvg:
+   vg: "vg.{{ storagename }}"
+   pvs: "{{ device }}1"
+
+- name: configure | create logical volume lg.{{ storagename }} on vg.{{ storagename }}
+  lvol:
+   vg: "vg.{{ storagename }}"
+   lv: "lv.{{ storagename }}"
+   size: 100%FREE
+
+- name: configure | create filesystem xfs on logical volume lv.{{ storagename }}
+  filesystem:
+   fstype: xfs
+   dev: "/dev/mapper/vg.{{ storagename }}-lv.{{ storagename }}"
+
+- name: configure | create directory for lv.{{ storagename }} on {{ storagepath }}
+  file:
+   path: "{{ storagepath }}"
+   state: directory
+
+- name: configure | add fstab entry for {{ storagepath }}
+  mount:
+   name: "{{ storagepath }}"
+   src: "/dev/mapper/vg.{{ storagename }}-lv.{{ storagename }}"
+   fstype: xfs
+   opts: defaults
+   state: present
+
+- name: post | mount disk
+  shell: mount -a
+  args:
+   warn: false
