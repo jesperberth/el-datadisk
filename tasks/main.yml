@@ -8,12 +8,19 @@
    state: present
   loop: "{{ device }}"
 
+- name: prepare | set fact from list of disks
+  set_fact:
+     disks: " {{device | join(',') }} "
+
+- name: debug
+  debug:
+    msg: "{{ disks }}"
+
 - name: configure | create volume group vg.{{ storagename }}
   lvg:
    vg: "vg.{{ storagename }}"
-   pvs: "{{ item }}1"
+   pvs: "{{ disks }}"
    pvresize: yes
-  loop: "{{ device }}"
 
 - name: configure | create logical volume lg.{{ storagename }} on vg.{{ storagename }}
   lvol:
