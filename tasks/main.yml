@@ -12,26 +12,18 @@
   set_fact:
     disk_list: "{{ device | map('regex_replace', '$', '1') | list }}"
 
-- name: debug
-  debug:
-    msg: "{{ disk_list }}"
-
 - name: Prep | set fact from list of disks
   set_fact:
      disks: "{{disk_list|join(',')}}"
 
-- name: debug
-  debug:
-    msg: "{{ disks }}"
-
 - name: configure | create volume group vg.{{ storagename }}
-  lvg:
+  community.general.lvg:
    vg: "vg.{{ storagename }}"
    pvs: "{{ disks }}"
    pvresize: yes
 
 - name: configure | create logical volume lg.{{ storagename }} on vg.{{ storagename }}
-  lvol:
+  community.general.lvol:
    vg: "vg.{{ storagename }}"
    lv: "lv.{{ storagename }}"
    size: +100%FREE
@@ -39,6 +31,7 @@
 - name: configure | create filesystem xfs on logical volume lv.{{ storagename }}
   filesystem:
    fstype: xfs
+   resizefs : yes
    dev: "/dev/mapper/vg.{{ storagename }}-lv.{{ storagename }}"
 
 - name: configure | create directory for lv.{{ storagename }} on {{ storagepath }}
