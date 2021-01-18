@@ -11,8 +11,8 @@
 - name: configure | create volume group vg.{{ storagename }}
   lvg:
    vg: "vg.{{ storagename }}"
-   pvs: "{{ item }}"
-  loop: "{{ device }}1"
+   pvs: "{{ item }}1"
+  loop: "{{ device }}"
 
 - name: configure | create logical volume lg.{{ storagename }} on vg.{{ storagename }}
   lvol:
