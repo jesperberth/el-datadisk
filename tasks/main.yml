@@ -34,7 +34,7 @@
   lvol:
    vg: "vg.{{ storagename }}"
    lv: "lv.{{ storagename }}"
-   size: 100%FREE
+   size: +100%FREE
 
 - name: configure | create filesystem xfs on logical volume lv.{{ storagename }}
   filesystem:
