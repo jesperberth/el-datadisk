@@ -8,9 +8,17 @@
    state: present
   loop: "{{ device }}"
 
-- name: prepare | set fact from list of disks
+- name: Prep | add partition to list
   set_fact:
-     disks: " {{ device +'1' | join(',') }} "
+    disk_list: "{{ device | map('regex_replace', '$', '1') | list }}"
+
+- name: debug
+  debug:
+    msg: "{{ disks_list }}"
+
+- name: Prep | set fact from list of disks
+  set_fact:
+     disks: " {{ device | join(',') }} "
 
 - name: debug
   debug:
