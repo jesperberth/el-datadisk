@@ -14,7 +14,7 @@
 
 - name: debug
   debug:
-    msg: "{{ disks_list }}"
+    msg: "{{ disk_list }}"
 
 - name: Prep | set fact from list of disks
   set_fact:
