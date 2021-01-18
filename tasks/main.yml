@@ -9,11 +9,11 @@
   loop: "{{ device }}"
 
 - name: Prep | add partition to list
-  set_fact:
+  ansible.builtin.set_fact:
     disk_list: "{{ device | map('regex_replace', '$', '1') | list }}"
 
 - name: Prep | set fact from list of disks
-  set_fact:
+  ansible.builtin.set_fact:
      disks: "{{disk_list|join(',')}}"
 
 - name: configure | create volume group vg.{{ storagename }}
@@ -29,18 +29,18 @@
    size: +100%FREE
 
 - name: configure | create filesystem xfs on logical volume lv.{{ storagename }}
-  filesystem:
+  community.general.filesystem:
    fstype: xfs
    resizefs : yes
    dev: "/dev/mapper/vg.{{ storagename }}-lv.{{ storagename }}"
 
 - name: configure | create directory for lv.{{ storagename }} on {{ storagepath }}
-  file:
+  ansible.builtin.file:
    path: "{{ storagepath }}"
    state: directory
 
 - name: configure | add fstab entry for {{ storagepath }}
-  mount:
+  ansible.posix.mount:
    name: "{{ storagepath }}"
    src: "/dev/mapper/vg.{{ storagename }}-lv.{{ storagename }}"
    fstype: xfs
@@ -48,6 +48,6 @@
    state: present
 
 - name: post | mount disk
-  shell: mount -a
+  ansible.builtin.shell: mount -a
   args:
    warn: false
