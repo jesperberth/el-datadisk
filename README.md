@@ -15,14 +15,15 @@ Role Variables
 *  storagepath
 
 ´´´bash
-
 ---
-
-device: "/dev/sdb"
+device:
+  - "/dev/sdb"
+  - "/dev/sdc
+  - "/dev/sdd"
 storagename: "datadisk"
 storagepath: "/mnt/datadisk"
 
-´´´´
+´´´
 
 Dependencies
 ------------
