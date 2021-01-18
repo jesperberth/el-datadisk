@@ -1,6 +1,6 @@
 ---
 # tasks file for el-datadisk
-- name: configure | create partion on device {{ item }}
+- name: configure | create lvm partion on disk
   community.general.parted:
    device: "{{ item }}"
    number: 1
@@ -12,6 +12,7 @@
   lvg:
    vg: "vg.{{ storagename }}"
    pvs: "{{ item }}1"
+   pvresize: yes
   loop: "{{ device }}"
 
 - name: configure | create logical volume lg.{{ storagename }} on vg.{{ storagename }}
