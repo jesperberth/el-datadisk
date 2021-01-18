@@ -18,7 +18,7 @@
 
 - name: Prep | set fact from list of disks
   set_fact:
-     disks: " {{ device | join(',') }} "
+     disks: " {{ disk_list | join(',') }} "
 
 - name: debug
   debug:
