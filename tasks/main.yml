@@ -2,10 +2,10 @@
 # tasks file for el-datadisk
 - name: configure | create lvm partion on disk
   community.general.parted:
-   device: "{{ item }}"
-   number: 1
-   flags: [ lvm ]
-   state: present
+    device: "{{ item }}"
+    number: 1
+    flags: [lvm]
+    state: present
   loop: "{{ device }}"
 
 - name: Prep | add partition to list
@@ -14,40 +14,40 @@
 
 - name: Prep | set fact from list of disks
   ansible.builtin.set_fact:
-     disks: "{{disk_list|join(',')}}"
+    disks: "{{disk_list|join(',')}}"
 
 - name: configure | create volume group vg.{{ storagename }}
   community.general.lvg:
-   vg: "vg.{{ storagename }}"
-   pvs: "{{ disks }}"
-   pvresize: yes
+    vg: "vg.{{ storagename }}"
+    pvs: "{{ disks }}"
+    pvresize: yes
 
 - name: configure | create logical volume lg.{{ storagename }} on vg.{{ storagename }}
   community.general.lvol:
-   vg: "vg.{{ storagename }}"
-   lv: "lv.{{ storagename }}"
-   size: +100%FREE
+    vg: "vg.{{ storagename }}"
+    lv: "lv.{{ storagename }}"
+    size: +100%FREE
 
 - name: configure | create filesystem xfs on logical volume lv.{{ storagename }}
   community.general.filesystem:
-   fstype: xfs
-   resizefs : yes
-   dev: "/dev/mapper/vg.{{ storagename }}-lv.{{ storagename }}"
+    fstype: xfs
+    resizefs: yes
+    dev: "/dev/mapper/vg.{{ storagename }}-lv.{{ storagename }}"
 
 - name: configure | create directory for lv.{{ storagename }} on {{ storagepath }}
   ansible.builtin.file:
-   path: "{{ storagepath }}"
-   state: directory
+    path: "{{ storagepath }}"
+    state: directory
 
 - name: configure | add fstab entry for {{ storagepath }}
   ansible.posix.mount:
-   name: "{{ storagepath }}"
-   src: "/dev/mapper/vg.{{ storagename }}-lv.{{ storagename }}"
-   fstype: xfs
-   opts: defaults
-   state: present
+    name: "{{ storagepath }}"
+    src: "/dev/mapper/vg.{{ storagename }}-lv.{{ storagename }}"
+    fstype: xfs
+    opts: defaults
+    state: present
 
 - name: post | mount disk
   ansible.builtin.shell: mount -a
   args:
-   warn: false
+    warn: false
